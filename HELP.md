@@ -35,7 +35,7 @@ cd ~/prod/MACS
 cd ~/MACS
 git status
 git add .
-git commit -m "Описание изменений"
+git commit -m ""
 git push
 ```
 
