@@ -1,0 +1,9 @@
+# MACS: GUI MVP + existing Textual scaffold. Python 3.13.
+# asyncssh[bcrypt]: encrypted OpenSSH private keys; pyte: terminal emulation.
+PyQt6==6.12.0
+qasync==0.28.0
+asyncssh[bcrypt]==2.24.1
+aiosqlite==0.22.1
+cryptography==50.0.2
+pyte==0.8.2
+textual==8.2.8
