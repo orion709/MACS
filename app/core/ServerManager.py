@@ -1,6 +1,6 @@
 import asyncio
 
-from ssh import SshMACS
+from ssh.main import SshMACS
 from sql import SqlMACS
 
 class ServerManager():
