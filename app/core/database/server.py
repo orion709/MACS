@@ -37,7 +37,7 @@ async def upd_server_sql(session, conf_id, field, newblock):
             f"UPDATE SERVERS SET {field} = ? WHERE CONFIG_ID = ?",
             (newblock, conf_id)
         ) as cursor:
-            update = cursor.rowcount > 9
+            update = cursor.rowcount > 0
         await session.commit()
         return update
     else:
