@@ -8,31 +8,26 @@ class SqlMACS():
         self.password = None
         self._session = None
         self._lock = asyncio.Lock()
-    
+    # control db
     async def init_storage(self):
-        if await initBD():
-            return True
+        if await initBD(): return True
     
     async def start_storage(self):
-        if not self._session:
-            self._session = await startBD(self.password)
+        if not self._session: self._session = await startBD(self.password)
         return True
     
     async def close_storage(self):
-        res = await closeBD(self._session)
-        self._session = None
+        res = await closeBD(self._session, self._lock)
+        if res: self._session = None
         return res
-
+    # CRUD start
     async def add_server(self, title, ip, port, servname, password, keypath, keytxt):
-        #conf_id
         return await add_server_sql(self._session, self._lock, title, ip, port, servname, password, keypath, keytxt)
 
     async def del_server(self, conf_id):
-        #True False
         return await del_server_sql(self._session, self._lock, conf_id)
 
     async def get_server(self, conf_id, is_one):
-        #dick or list of dicks lol
         return await get_server_sql(self._session, self._lock, conf_id, is_one)
     
     async def update_server(self, conf_id, updates):

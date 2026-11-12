@@ -34,8 +34,9 @@ async def startBD(BDpassword):
 
     return db
 
-async def closeBD(session):
-    if session:
-        await session.close()
-        return True
-    return False
+async def closeBD(session, lock):
+    async with lock:
+        if session:
+            await session.close()
+            return True
+        return False
