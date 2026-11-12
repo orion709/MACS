@@ -16,11 +16,8 @@ class ServerManager():
         return await self._ssh.close_session(session_name)
     
     # ====================================== SQL ===================================
-    async def InitStorage(self):
-        if (await self._sql.init_storage(), await self._sql.start_storage()) == (True, True):
-            return True
-        else:
-            return False
+    async def InitStorage(self): #noReturn
+        await self._sql.init_storage(), await self._sql.start_storage()
     
     async def CloseStorage(self):
         return await self._sql.close_storage()
@@ -33,3 +30,6 @@ class ServerManager():
     
     async def GetServer(self, conf_id, is_one):
         return await self._sql.get_server(conf_id, is_one)
+    
+    async def UpdServer(self, field, block):
+        return await self._sql.update_server(conf_id, field, block)

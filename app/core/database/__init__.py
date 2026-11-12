@@ -18,7 +18,9 @@ class SqlMACS():
         return True
     
     async def close_storage(self):
-        return await closeBD(self._session)
+        res = await closeBD(self._session)
+        self._session = None
+        return res
 
     async def add_server(self, title, ip, port, servname, password, keypath, keytxt):
         #conf_id
@@ -31,3 +33,6 @@ class SqlMACS():
     async def get_server(self, conf_id, is_one):
         #dick or list of dicks lol
         return await get_server_sql(self._session, conf_id, is_one)
+    
+    async def update_server(self, conf_id, field, block):
+        return await upd_server_sql(self._session, conf_id, field, block)
