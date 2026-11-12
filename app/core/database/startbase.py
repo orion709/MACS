@@ -29,6 +29,7 @@ async def initBD(self):
 
 async def startBD(self, BDpassword):
     db = await aiosqlite.connect(DB_PATH)
+    db.row_factory = aiosqlite.Row
     await db.execute("PRAGMA foreign_keys = ON")
 
     return db

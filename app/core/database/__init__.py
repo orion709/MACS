@@ -18,11 +18,13 @@ class SqlMACS():
         return self.session
 
     async def add_server(self, title, ip, port, servname, password, keytxt, keypath):
-        #its return conf_id
+        #conf_id
         return await add_server_sql(self, self._session, title, ip, port, servname, password, keytxt, keypath)
 
     async def del_server(self, conf_id):
+        #True False
         return await del_server_sql(self, self._session)
 
-    async def get_server(self, conf_id):
-        return await get_server_sql(self, self._session)
+    async def get_server(self, conf_id, is_one):
+        #dick or list of dicks lol
+        return await get_server_sql(self, self._session, is_one)
