@@ -14,17 +14,17 @@ class SqlMACS():
     async def start_storage(self, bd_password):
         if bd_password:
             self.password = bd_password
-        self.session = await startBD(self.password)
-        return self.session
+        self._session = await startBD(self.password)
+        return self._session
 
-    async def add_server(self, title, ip, port, servname, password, keytxt, keypath):
+    async def add_server(self, title, ip, port, servname, password, keypath, keytxt):
         #conf_id
-        return await add_server_sql(self, self._session, title, ip, port, servname, password, keytxt, keypath)
+        return await add_server_sql(self._session, title, ip, port, servname, password, keytxt, keypath)
 
     async def del_server(self, conf_id):
         #True False
-        return await del_server_sql(self, self._session)
+        return await del_server_sql(self._session)
 
     async def get_server(self, conf_id, is_one):
         #dick or list of dicks lol
-        return await get_server_sql(self, self._session, is_one)
+        return await get_server_sql(self._session, conf_id, is_one)
