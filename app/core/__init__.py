@@ -31,5 +31,5 @@ class ServerManager():
     async def GetServer(self, conf_id, is_one):
         return await self._sql.get_server(conf_id, is_one)
     
-    async def UpdServer(self, conf_id, field, block):
-        return await self._sql.update_server(conf_id, field, block)
+    async def UpdServer(self, conf_id, updates):
+        return await self._sql.update_server(conf_id, updates)
