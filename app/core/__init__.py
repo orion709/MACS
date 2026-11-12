@@ -22,6 +22,9 @@ class ServerManager():
         else:
             return False
     
+    async def CloseStorage(self):
+        return await self._sql.close_storage()
+
     async def AddServer(self, title, ip, port, servname, password, keypath, keytxt):
         return await self._sql.add_server(title, ip, port, servname, password, keypath, keytxt)
     

@@ -27,8 +27,9 @@ async def get_server_sql(session, conf_id, one):
         ) as cursor:
             try:
                 return dict(await cursor.fetchone())
-            except:
-                return None
+            except Exception as e:
+                print(e)
+                return ("err", e)
     else:
         async with session.execute("SELECT * FROM SERVERS") as cursor:
             return [dict(row) for row in await cursor.fetchall()]

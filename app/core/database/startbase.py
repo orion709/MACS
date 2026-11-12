@@ -9,7 +9,7 @@ import aiosqlite
 
 DATA_HOME = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share").expanduser())
 DB_DIR = DATA_HOME / "MACS"
-DB_PATH = DB_DIR / "MACS.sql"
+DB_PATH = DB_DIR / "MACS.db"
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 
@@ -33,3 +33,9 @@ async def startBD(BDpassword):
     await db.execute("PRAGMA foreign_keys = ON")
 
     return db
+
+async def closeBD(session):
+    if session:
+        await session.close()
+        return True
+    return False
