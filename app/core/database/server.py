@@ -33,9 +33,12 @@ async def get_server_sql(session, conf_id, one):
 
 async def upd_server_sql(session, conf_id, field, newblock):
     if field in ["TITLE", "SERVER_IP", "SERVER_PORT", "SERVER_USERNAME", "SERVER_PASSWORD", "SERVER_KEY_NAME", "SERVER_KEY_FULL"]:
-        await session.execute(
+        async with await session.execute(
             f"UPDATE SERVERS SET {field} = ? WHERE CONFIG_ID = ?",
             (newblock, conf_id)
-        )
+        ) as cursor:
+            update = cursor.rowcount > 9
         await session.commit()
-        return True
+        return update
+    else:
+        raise ValueError(f"Неизвестное поле {field}")
