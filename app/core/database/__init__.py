@@ -1,10 +1,12 @@
 import asyncio
 
 from .startbase import initBD, startBD
+from .server import add_server_sql, del_server_sql, get_server_sql
 
 class SqlMACS():
     def __init__(self):
         self.password = None
+        self._session = None
     
     async def init_storage(self):
         return await initBD()
@@ -12,4 +14,15 @@ class SqlMACS():
     async def start_storage(self, bd_password):
         if bd_password:
             self.password = bd_password
-        return await startBD(self.password)
+        self.session = await startBD(self.password)
+        return self.session
+
+    async def add_server(self, title, ip, port, servname, password, keytxt, keypath):
+        #its return conf_id
+        return await add_server_sql(self, self._session, title, ip, port, servname, password, keytxt, keypath)
+
+    async def del_server(self, conf_id):
+        return await del_server_sql(self, self._session)
+
+    async def get_server(self, conf_id):
+        return await get_server_sql(self, self._session)
