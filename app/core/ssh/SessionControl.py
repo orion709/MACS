@@ -33,3 +33,12 @@ async def reconnect_ssh(conn):
 
 async def close_ssh_session(session_name):
     pass
+
+
+# ========================= processes =========================
+async def create_process(conn):
+    process = await conn.create_process(
+        term_type="xterm-256color",
+        term_size=(80, 24),
+        encoding=None
+    )
