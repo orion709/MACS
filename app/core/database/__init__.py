@@ -7,6 +7,7 @@ class SqlMACS():
     def __init__(self):
         self.password = None
         self._session = None
+        self._lock = asincio.Lock()
     
     async def init_storage(self):
         if await initBD():
@@ -34,5 +35,5 @@ class SqlMACS():
         #dick or list of dicks lol
         return await get_server_sql(self._session, conf_id, is_one)
     
-    async def update_server(self, conf_id, field, block):
-        return await upd_server_sql(self._session, conf_id, field, block)
+    async def update_server(self, conf_id, updates):
+        return await upd_server_sql(self._session, self._lock, conf_id, updares)

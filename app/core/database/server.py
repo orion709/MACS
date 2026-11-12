@@ -31,14 +31,26 @@ async def get_server_sql(session, conf_id, one):
         async with session.execute("SELECT * FROM SERVERS") as cursor:
             return [dict(row) for row in await cursor.fetchall()]
 
-async def upd_server_sql(session, conf_id, field, newblock):
-    if field in ["TITLE", "SERVER_IP", "SERVER_PORT", "SERVER_USERNAME", "SERVER_PASSWORD", "SERVER_KEY_NAME", "SERVER_KEY_FULL"]:
-        async with await session.execute(
-            f"UPDATE SERVERS SET {field} = ? WHERE CONFIG_ID = ?",
-            (newblock, conf_id)
-        ) as cursor:
-            update = cursor.rowcount > 0
-        await session.commit()
-        return update
-    else:
-        raise ValueError(f"Неизвестное поле {field}")
+# ============= jSON ==========
+# {
+#     title: "name";
+#     serer_ip: "1.1.1.1";
+#     server_username: "orion"
+# }
+
+async def upd_server_sql(session, lock, conf_id, updates):
+    async with lock:
+        if field in ["TITLE", "SERVER_IP", "SERVER_PORT", "SERVER_USERNAME", "SERVER_PASSWORD", "SERVER_KEY_NAME", "SERVER_KEY_FULL"]:
+            try:
+                await session.execute("BEGIN")
+                for field, value in updates,items():
+                    await session.execute(
+                        f"UPDATE SERVERS SET {field.upper()} = ? WHERE CONFIG_ID = ?",
+                        (value, conf_id)
+                    )
+                await session.commit()
+                return True
+            except:
+                await session.rollback()
+                raise False
+        
