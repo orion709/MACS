@@ -1,7 +1,7 @@
 import asyncio
 
 from .startbase import initBD, startBD, closeBD
-from .server import add_server_sql, del_server_sql, get_server_sql
+from .server import add_server_sql, del_server_sql, get_server_sql, upd_server_sql
 
 class SqlMACS():
     def __init__(self):
