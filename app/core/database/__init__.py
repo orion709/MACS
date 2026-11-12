@@ -18,9 +18,9 @@ class SqlMACS():
         self._session = await startBD(self.password)
         return True
 
-    async def add_server(self, title, ip, port, servname, password, keypath, keytxt): #не перепутаны
+    async def add_server(self, title, ip, port, servname, password, keypath, keytxt):
         #conf_id
-        return await add_server_sql(self._session, title, ip, port, servname, password, keytxt, keypath)
+        return await add_server_sql(self._session, title, ip, port, servname, password, keypath, keytxt)
 
     async def del_server(self, conf_id):
         #True False
