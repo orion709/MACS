@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import aiosqlite
-#import cryptography
+#import SQLCipher/cryptography
 # шифрование для будущего
 
 # ~/.local/share/macs/macs.db
