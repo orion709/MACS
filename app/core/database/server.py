@@ -47,11 +47,15 @@ async def upd_server_sql(session, lock, conf_id, updates):
             await session.execute("BEGIN")
             for field, value in updates.items():
                 if field in ["TITLE", "SERVER_IP", "SERVER_PORT", "SERVER_USERNAME", "SERVER_PASSWORD", "SERVER_KEY_NAME", "SERVER_KEY_FULL"]:
-                    await session.execute(
+                    async with session.execute(
                         f"UPDATE SERVERS SET {field.upper()} = ? WHERE CONFIG_ID = ?",
                         (value, conf_id)
-                    )
+                    ) as cursor:
+                        if cursor.rowcount == 0: raise ValueError(f"Операция не выолнена({field}: {value})")
+                else:
+                    raise ValueError(f"Нету такого поля как {field} или недоступно для изменения")
             await session.commit()
+            return True
         except:
             await session.rollback()
             raise
