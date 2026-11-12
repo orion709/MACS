@@ -1,7 +1,7 @@
 import asyncio
 
 from .ssh import SshMACS
-from .sql import SqlMACS
+from .database import SqlMACS
 
 class ServerManager():
     def __init__(self):
@@ -17,4 +17,16 @@ class ServerManager():
     
     # ====================================== SQL ===================================
     async def InitStorage(self):
-        return await self._sql.init_storage(self.SQLPassword)
+        if (await self._sql.init_storage(), await self._sql.start_storage()) == (True, True):
+            return True
+        else:
+            return False
+    
+    async def AddServer(self, title, ip, port, servname, password, keypath, keytxt):
+        return await self._sql.add_server(title, ip, port, servname, password, keypath, keytxt)
+    
+    async def DelServer(self, conf_id):
+        return await self._sql.del_server(conf_id)
+    
+    async def GetServer(self, conf_id, is_one):
+        return await self._sql.get_server(conf_id, is_one)

@@ -13,7 +13,7 @@ DB_PATH = DB_DIR / "MACS.sql"
 
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
 
-async def initBD(self):
+async def initBD():
     DB_DIR.mkdir(parents=True, exist_ok=True, mode=0o700)
     DB_DIR.chmod(0o700)
 
@@ -27,7 +27,7 @@ async def initBD(self):
 
     return DB_PATH
 
-async def startBD(self, BDpassword):
+async def startBD(BDpassword):
     db = await aiosqlite.connect(DB_PATH)
     db.row_factory = aiosqlite.Row
     await db.execute("PRAGMA foreign_keys = ON")
