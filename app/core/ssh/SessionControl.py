@@ -33,7 +33,7 @@ async def create_ssh_BEGINsession(manager, ip, port, name, password, keytxt, con
     )
     manager._live_connections[conf_id] = [conn, [main_wind], True]
     await conn.wait_closed()
-    if manager._live_connections[conf_id][2]: return await create_ssh_BEGINsession(ip, port, name, password, keytxt)
+    if manager._live_connections[conf_id][2]: return await create_ssh_BEGINsession(manager, ip, port, name, password, keytxt, conf_id, session_name)
     else: return False
 
 
