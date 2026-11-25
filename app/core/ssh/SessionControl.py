@@ -1,55 +1,91 @@
 import asyncio
-
 import asyncssh
 
-async def create_ssh_BEGINsession(manager, ip, port, name, password, keytxt, conf_id, session_name):
+
+async def create_ssh_session(ip, port, name, password, keytxt):
+    options = {
+        "host": ip,
+        "port": port,
+        "username": name,
+        "connect_timeout": 30,
+        "keepalive_count_max": 2,
+        "keepalive_interval": 15,
+    }
+
     if keytxt:
-        pkey = asyncssh.import_private_key(keytxt)
-        conn = await asyncssh.connect(
-            host=ip,
-            port=port,
-            username=name,
-            client_keys=[pkey],
-            known_hosts=None,
-            connect_timeout=30,
-            keepalive_count_max=2,
-            keepalive_interval=15
-        )
+        private_key = asyncssh.import_private_key(keytxt)
+        options["client_keys"] = [private_key]
     else:
-        conn = await asyncssh.connect(
-            host=ip,
-            port=port,
-            username=name,
-            password=password,
-            known_hosts=None,
-            connect_timeout=30,
-            keepalive_count_max=2,
-            keepalive_interval=15
-        )
-    main_wind = await conn.create_process(
+        options["password"] = password
+
+    return await asyncssh.connect(**options)
+
+
+async def create_process(conn):
+    return await conn.create_process(
         term_type="xterm-256color",
         term_size=(80, 24),
-        encoding=None
+        encoding=None,
     )
-    manager._live_connections[conf_id] = [conn, [main_wind], True]
+
+
+async def close_ssh_session(conn):
+    if conn is None:
+        return False
+
+    conn.close()
     await conn.wait_closed()
-    if manager._live_connections[conf_id][2]: return await create_ssh_BEGINsession(manager, ip, port, name, password, keytxt, conf_id, session_name)
-    else: return False
+    return True
 
 
-# async def reconnect_ssh(conn, ip, port, name, password, keytxt):
-#     await asyncssh.wait_closed(conn)
-#     return await create_ssh_session(ip, port, name, password, keytxt)
+async def reconnect_ssh(
+    manager,
+    session_id,
+    ip,
+    port,
+    name,
+    password,
+    keytxt,
+):
+    session = manager._live_connections[session_id]
 
+    while True:
+        # Ожидаем разрыва текущего соединения.
+        await session["conn"].wait_closed()
 
-async def close_ssh_session(session_name):
-    pass
+        session["status"] = "reconnecting"
+        session["conn"] = None
+        session["windows"] = []
 
+        delay = 2
 
-# ========================= processes =========================
-# async def create_process(conn):
-#     return await conn.create_process(
-#         term_type="xterm-256color",
-#         term_size=(80, 24),
-#         encoding=None
-#     )
+        while True:
+            new_conn = None
+
+            try:
+                new_conn = await create_ssh_session(
+                    ip, port, name, password, keytxt
+                )
+
+                new_process = await create_process(new_conn)
+
+                session["conn"] = new_conn
+                session["windows"] = [new_process]
+                session["status"] = "connected"
+
+                # Продолжаем следить за новым соединением.
+                break
+
+            except asyncio.CancelledError:
+                if new_conn is not None:
+                    new_conn.close()
+                    await new_conn.wait_closed()
+                raise
+
+            except (OSError, asyncssh.Error, TimeoutError):
+                if new_conn is not None:
+                    new_conn.close()
+                    await new_conn.wait_closed()
+
+                await asyncio.sleep(delay)
+                delay = min(delay * 2, 30)
