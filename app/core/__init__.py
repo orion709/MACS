@@ -33,3 +33,28 @@ class ServerManager():
     
     async def UpdServer(self, conf_id, updates):
         return await self._sql.update_server(conf_id, updates)
+    
+    async def ConnectSavedServer(self, conf_id, password=None):
+        config = await self.GetServer(conf_id, True)
+
+        if config is None:
+            raise ValueError("Сервер не найден")
+
+        return await self.NewSession(
+            ip=config["SERVER_IP"],
+            port=config["SERVER_PORT"],
+            name=config["SERVER_USERNAME"],
+            password=password,
+            keytxt=None,
+            conf_id=conf_id,
+            session_name="main",
+        )
+
+    async def SaveServer(self, title, ip, port, username):
+        return await self.AddServer(
+            title, ip, port, username,
+            None, None, None,
+        )
+
+    def GetSession(self, session_name="main"):
+        return self._ssh.get_session(session_name)
