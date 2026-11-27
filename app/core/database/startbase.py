@@ -7,7 +7,9 @@ import aiosqlite
 
 # ~/.local/share/macs/macs.db
 
-DATA_HOME = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share").expanduser())
+DATA_HOME = Path(
+    os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share")
+).expanduser()
 DB_DIR = DATA_HOME / "MACS"
 DB_PATH = DB_DIR / "MACS.db"
 
